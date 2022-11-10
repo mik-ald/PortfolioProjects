@@ -1,4 +1,4 @@
-# PortfolioProjects
+# Portfolio Projects
 
 The projects within this repository were developed as part of my own personal training. Each script contains expertise I have gathered that would ultimatley showcase my abilities within each language and that I can hopefully replicate in future work/projects.
 
