@@ -1,7 +1,6 @@
 # PortfolioProjects
 
-The projects within this repository were developed as part of my own personal training, and their purpose was to expand my knowledge in Data Analysis and Programming. 
-Each script contains expertise I have gathered that would ultimatley showcase my abilities within each language and that I can hopefully replicate in future work/projects.
+The projects within this repository were developed as part of my own personal training. Each script contains expertise I have gathered that would ultimatley showcase my abilities within each language and that I can hopefully replicate in future work/projects.
 
 
 Here is a summary of the different techniques used per Project:
