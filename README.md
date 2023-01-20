@@ -1,6 +1,6 @@
 # Portfolio Projects
 
-The projects within this repository were developed for my own personal training and portfolio. They each contain solutions that ultimatley showcase my expertise within each language, and knowledge I would be able to use in future work/projects.
+The projects within this repository were developed for my own personal training and portfolio. They each contain solutions that ultimatley showcase my expertise within each language, and any knowledge I would be able to use in future work/projects.
 
 
 Here is a summary of the different techniques used per Project:
