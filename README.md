@@ -1,6 +1,6 @@
 # Portfolio Projects
 
-The projects within this repository were developed as part of my own personal training. Each script contains expertise I have gathered that would ultimatley showcase my abilities within each language and that I can hopefully replicate in future work/projects.
+The projects within this repository were developed for my own personal training and portfolio. They each contain solutions that ultimatley showcase my expertise within each language, and knowledge I would be able to use in future work/projects.
 
 
 Here is a summary of the different techniques used per Project:
@@ -23,3 +23,9 @@ Data Cleaning.sql:
 - Removing duplicates
 - Deleting unused columns
 
+Dannys Diner.sql:
+- PARTITION BY Statements
+- CASE WHEN Statements
+- CTE
+- Problem Solving
+- JOINS
