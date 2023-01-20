@@ -23,7 +23,7 @@ Data Cleaning.sql:
 - Removing duplicates
 - Deleting unused columns
 
-Dannys Diner.sql:
+Danny's Diner SQL Case Study.sql:
 - PARTITION BY Statements
 - CASE WHEN Statements
 - CTE
