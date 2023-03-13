@@ -1,0 +1,123 @@
+-- Table Cleaning
+
+SELECT order_id, customer_id, pizza_id, 
+  CASE 
+    WHEN exclusions IS null OR exclusions LIKE 'null' THEN ' '
+    ELSE exclusions
+    END AS exclusions,
+  CASE 
+    WHEN extras IS NULL or extras LIKE 'null' THEN ' '
+    ELSE extras 
+    END AS extras, 
+  order_time
+INTO #customer_orders -- create TEMP TABLE
+FROM customer_orders
+
+SELECT order_id, runner_id,
+  CASE 
+    WHEN pickup_time LIKE 'null' THEN ' '
+    ELSE pickup_time 
+    END AS pickup_time,
+  CASE 
+    WHEN distance LIKE 'null' THEN ' '
+    WHEN distance LIKE '%km' THEN TRIM('km' from distance) 
+    ELSE distance END AS distance,
+  CASE 
+    WHEN duration LIKE 'null' THEN ' ' 
+    WHEN duration LIKE '%mins' THEN TRIM('mins' from duration) 
+    WHEN duration LIKE '%minute' THEN TRIM('minute' from duration)        
+    WHEN duration LIKE '%minutes' THEN TRIM('minutes' from duration)       
+    ELSE duration END AS duration,
+  CASE 
+    WHEN cancellation IS NULL or cancellation LIKE 'null' THEN ''
+    ELSE cancellation END AS cancellation
+INTO #runner_orders
+FROM runner_orders
+
+-- How many pizzas were ordered?
+SELECT COUNT(order_id)
+FROM dbo.#customer_orders
+
+-- How many unique customer orders were made?
+SELECT COUNT(DISTINCT order_id)
+FROM dbo.#customer_orders
+
+-- How many successful orders were delivered by each runner?
+SELECT COUNT(pickup_time)
+FROM dbo.#runner_orders
+
+
+-- How many of each type of pizza was delivered?
+SELECT pizza_id, COUNT(pizza_id) total_ordered
+FROM dbo.#customer_orders c
+JOIN dbo.#runner_orders r ON c.order_id = r.order_id
+GROUP BY pizza_id
+
+-- How many Vegetarian and Meatlovers were ordered by each customer?
+SELECT c.customer_id, p.pizza_id, COUNT(p.pizza_id) total_pizzas
+FROM dbo.#customer_orders c
+JOIN dbo.pizza_names p ON c.pizza_id = p.pizza_id
+GROUP BY c.customer_id, p.pizza_id
+
+-- What was the maximum number of pizzas delivered in a single order?
+SELECT TOP 1 c.order_id, COUNT(c.order_id) as pizzas_ordered
+FROM dbo.#customer_orders c
+JOIN dbo.#runner_orders r ON c.order_id = r.order_id
+GROUP BY c.order_id
+ORDER BY pizzas_ordered Desc
+
+-- For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+WITH delivered_orders_cte AS
+(
+SELECT c.customer_id, c.order_id, c.exclusions, c.extras, r.pickup_time, r.cancellation,
+CASE 
+WHEN r.pickup_time <> '' AND (exclusions <> '' OR extras <> '') THEN 'changed'
+ELSE 'unchanged'
+END AS pizza_changes
+FROM #customer_orders c
+JOIN #runner_orders r ON c.order_id = r.order_id
+WHERE r.cancellation = ''
+)
+
+SELECT customer_id, 
+SUM(CASE WHEN pizza_changes = 'changed' THEN 1 ELSE 0 END) total_changed,
+SUM(CASE WHEN pizza_changes = 'unchanged' THEN 1 ELSE 0 END) total_unchanged
+FROM delivered_orders_cte
+GROUP BY customer_id
+
+
+-- How many pizzas were delivered that had both exclusions and extras?
+WITH delivered_orders_cte AS
+(
+SELECT c.customer_id, c.order_id, c.exclusions, c.extras, r.pickup_time, r.cancellation,
+CASE 
+WHEN r.pickup_time <> '' AND (exclusions <> '' AND extras <> '') THEN 'both_changes'
+ELSE 'one_change'
+END AS pizza_changes
+FROM #customer_orders c
+JOIN #runner_orders r ON c.order_id = r.order_id
+WHERE r.cancellation = ''
+)
+
+SELECT customer_id, 
+SUM(CASE WHEN pizza_changes = 'both_changes' THEN 1 ELSE 0 END) both_changes
+FROM delivered_orders_cte
+GROUP BY customer_id
+
+-- What was the total volume of pizzas ordered for each hour of the day?
+WITH hours_cte AS
+(
+SELECT DATEPART(HOUR, order_time) AS hours_ordered
+FROM dbo.#customer_orders 
+)
+
+SELECT hours_ordered, COUNT(hours_ordered) AS total_ordered
+FROM hours_cte
+GROUP BY hours_ordered
+ORDER BY hours_ordered ASC
+
+-- What was the volume of orders for each day of the week?
+SELECT FORMAT(DATEADD(DAY, 2, order_time),'dddd') AS day_of_week, 
+ COUNT(order_id) AS total_pizzas_ordered
+FROM #customer_orders
+GROUP BY FORMAT(DATEADD(DAY, 2, order_time),'dddd')
